@@ -98,7 +98,7 @@ npm run start:prod
 docker-compose up -d
 ```
 
-Приложение будет доступно по адресу: `http://localhost:3000`
+Приложение будет доступно по адресу: `http://localhost:3003`
 
 ## Миграции
 
@@ -120,7 +120,7 @@ npm run migration:revert
 ## API Документация
 
 После запуска приложения, Swagger документация доступна по адресу:
-- http://localhost:3000/api
+- http://localhost:3003/api
 
 ## Endpoints
 
@@ -150,7 +150,7 @@ npm run migration:revert
 
 ### Регистрация
 ```bash
-curl -X POST http://localhost:3000/auth/register \
+curl -X POST http://localhost:3003/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@example.com",
@@ -160,7 +160,7 @@ curl -X POST http://localhost:3000/auth/register \
 
 ### Вход
 ```bash
-curl -X POST http://localhost:3000/auth/login \
+curl -X POST http://localhost:3003/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@example.com",
@@ -170,7 +170,7 @@ curl -X POST http://localhost:3000/auth/login \
 
 ### Создание статьи
 ```bash
-curl -X POST http://localhost:3000/articles \
+curl -X POST http://localhost:3003/articles \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -d '{
@@ -182,7 +182,7 @@ curl -X POST http://localhost:3000/articles \
 
 ### Получение статей с фильтрацией
 ```bash
-curl "http://localhost:3000/articles?page=1&limit=10&authorId=USER_UUID&sortOrder=DESC"
+curl "http://localhost:3003/articles?page=1&limit=10&authorId=USER_UUID&sortOrder=DESC"
 ```
 
 ## Тестирование

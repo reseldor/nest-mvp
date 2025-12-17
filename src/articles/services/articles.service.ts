@@ -3,13 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
-import { Article } from './entities/article.entity';
-import { CreateArticleDto } from './dto/create-article.dto';
-import { UpdateArticleDto } from './dto/update-article.dto';
-import { QueryArticleDto, SortOrder } from './dto/query-article.dto';
-import { PaginatedResult } from '../common/interfaces/paginated-result.interface';
-import { UsersService } from '../users/users.service';
-import { Role } from '../users/enums/role.enum';
+import { Article } from '../entities/article.entity';
+import { CreateArticleDto } from '../dto/create-article.dto';
+import { UpdateArticleDto } from '../dto/update-article.dto';
+import { QueryArticleDto, SortOrder } from '../dto/query-article.dto';
+import { PaginatedResult } from '../../common/interfaces/paginated-result.interface';
+import { UsersService } from '../../users/services/users.service';
+import { Role } from '../../users/enums/role.enum';
 
 @Injectable()
 export class ArticlesService {
@@ -39,16 +39,13 @@ export class ArticlesService {
   async findAll(queryDto: QueryArticleDto): Promise<PaginatedResult<Article>> {
     const { page = 1, limit = 10, authorId, startDate, endDate, sortOrder } = queryDto;
 
-    // Build cache key
     const cacheKey = `articles:${page}:${limit}:${authorId || 'all'}:${startDate || 'none'}:${endDate || 'none'}:${sortOrder}`;
 
-    // Try to get from cache
     const cached = await this.redisClient.get(cacheKey);
     if (cached) {
       return JSON.parse(cached);
     }
 
-    // Build query
     const queryBuilder = this.articlesRepository
       .createQueryBuilder('article')
       .leftJoinAndSelect('article.author', 'author')
@@ -132,7 +129,6 @@ export class ArticlesService {
       throw new NotFoundException(`Article with ID ${id} not found`);
     }
 
-    // Cache the result
     await this.redisClient.setex(cacheKey, this.cacheTtl, JSON.stringify(article));
 
     return article;
@@ -142,7 +138,6 @@ export class ArticlesService {
     const article = await this.findOne(id);
     const user = await this.usersService.findOne(userId);
 
-    // Check ownership
     if (article.authorId !== userId && user.role !== Role.ADMIN) {
       throw new ForbiddenException('You do not have permission to update this article');
     }
@@ -150,7 +145,6 @@ export class ArticlesService {
     Object.assign(article, updateArticleDto);
     const updatedArticle = await this.articlesRepository.save(article);
 
-    // Invalidate cache
     await this.invalidateArticleCache(id);
     await this.invalidateCache();
 
@@ -161,14 +155,12 @@ export class ArticlesService {
     const article = await this.findOne(id);
     const user = await this.usersService.findOne(userId);
 
-    // Check ownership
     if (article.authorId !== userId && user.role !== Role.ADMIN) {
       throw new ForbiddenException('You do not have permission to delete this article');
     }
 
     await this.articlesRepository.remove(article);
 
-    // Invalidate cache
     await this.invalidateArticleCache(id);
     await this.invalidateCache();
   }

@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UnauthorizedException } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { UsersService } from '../users/users.service';
+import { AuthService } from './services/auth.service';
+import { UsersService } from '../users/services/users.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { User } from '../users/entities/user.entity';
@@ -41,7 +41,7 @@ describe('AuthService', () => {
         'jwt.accessTokenSecret': 'access-secret',
         'jwt.refreshTokenSecret': 'refresh-secret',
         'jwt.accessTokenExpiresIn': '15m',
-        'jwt.refreshTokenExpiresIn': '7d',
+        'jwt.refreshTokenExpiresIn': '1d',
       };
       return config[key];
     }),
@@ -164,10 +164,10 @@ describe('AuthService', () => {
       const bcrypt = require('bcrypt');
       jest.spyOn(bcrypt, 'compare').mockResolvedValue(true);
 
-      const result = await service.validateUser(
-        'test@example.com',
-        'password123',
-      );
+      const result = await service.validateUser({
+        email: 'test@example.com',
+        password: 'password123',
+    });
 
       expect(result).not.toHaveProperty('password');
       expect(result).toHaveProperty('id', mockUser.id);
@@ -179,10 +179,10 @@ describe('AuthService', () => {
       const bcrypt = require('bcrypt');
       jest.spyOn(bcrypt, 'compare').mockResolvedValue(false);
 
-      const result = await service.validateUser(
-        'test@example.com',
-        'wrongpassword',
-      );
+      const result = await service.validateUser({
+        email: 'test@example.com',
+        password: 'wrongpassword',
+      });
 
       expect(result).toBeNull();
     });

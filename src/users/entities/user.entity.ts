@@ -1,21 +1,11 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
-} from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '../enums/role.enum';
 import { Article } from '../../articles/entities/article.entity';
+import { BaseEntity } from '../../common/entities/base.entity';
 
 @Entity('users')
-export class User {
-  @ApiProperty({ example: 'uuid' })
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class User extends BaseEntity {
   @ApiProperty({ example: 'user@example.com' })
   @Column({ unique: true })
   email: string;
@@ -30,14 +20,6 @@ export class User {
     default: Role.USER,
   })
   role: Role;
-
-  @ApiProperty()
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @ApiProperty()
-  @UpdateDateColumn()
-  updatedAt: Date;
 
   @OneToMany(() => Article, (article) => article.author)
   articles: Article[];

@@ -1,4 +1,4 @@
-# NestJS CMS API
+# NestJS MVP API
 
 REST API для системы управления контентом, построенная на NestJS с использованием PostgreSQL, Redis и JWT аутентификации.
 
@@ -67,7 +67,7 @@ REDIS_PORT=6379
 JWT_ACCESS_SECRET=your-access-secret-key-change-in-production
 JWT_REFRESH_SECRET=your-refresh-secret-key-change-in-production
 JWT_ACCESS_EXPIRES_IN=15m
-JWT_REFRESH_EXPIRES_IN=7d
+JWT_REFRESH_EXPIRES_IN=1d
 ```
 
 5. Запустите PostgreSQL и Redis (через Docker):

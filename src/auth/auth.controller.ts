@@ -1,16 +1,9 @@
-import {
-  Controller,
-  Post,
-  Body,
-  HttpCode,
-  HttpStatus,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { AuthService } from './auth.service';
+import { AuthService } from './services/auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { TokensDto } from './dto/tokens.dto';
+import { LoginResponseDto } from './dto/login.response.dto';
 import { Public } from './decorators/public.decorator';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { AuthGuard } from '@nestjs/passport';
@@ -27,10 +20,10 @@ export class AuthController {
   @ApiResponse({
     status: 201,
     description: 'User successfully registered',
-    type: TokensDto,
+    type: LoginResponseDto,
   })
   @ApiResponse({ status: 409, description: 'User already exists' })
-  async register(@Body() registerDto: RegisterDto): Promise<TokensDto> {
+  async register(@Body() registerDto: RegisterDto): Promise<LoginResponseDto> {
     return this.authService.register(registerDto);
   }
 
@@ -41,10 +34,10 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'User successfully logged in',
-    type: TokensDto,
+    type: LoginResponseDto,
   })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  async login(@Body() loginDto: LoginDto): Promise<TokensDto> {
+  async login(@Body() loginDto: LoginDto): Promise<LoginResponseDto> {
     return this.authService.login(loginDto);
   }
 
@@ -80,8 +73,7 @@ export class AuthController {
       },
     },
   })
-  async logout(@CurrentUser() user: any): Promise<{ message: string }> {
+  async logout(@CurrentUser() user: any): Promise<void> {
     return this.authService.logout(user.id);
   }
 }
-
